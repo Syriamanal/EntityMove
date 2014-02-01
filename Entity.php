@@ -56,9 +56,6 @@ class Entity extends Position{
 	public $inAction = false;
 
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
-		$this->floor = false;
-		$this->bomb = false;
-		$this->target = false;
 		$this->level = $level;
 		$this->fallY = false;
 		$this->fallStart = false;
@@ -110,11 +107,10 @@ class Entity extends Position{
 				$this->setHealth(5, "generic");
 				$this->server->schedule(6010, array($this, "update")); //Despawn
 				$this->update();
-				$this->size = 0.5;
+				$this->size = 0.75;
 				break;
 			case ENTITY_MOB:
-				//$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"]:10, "generic");
-				$this->setHealth(1);
+				$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"]:10, "generic");
 				$mobs = array(
 					MOB_ZOMBIE => "좀비",
 					MOB_SPIDER => "거미",
@@ -182,7 +178,7 @@ class Entity extends Position{
 	public function getDrops(){
 		if($this->class === ENTITY_PLAYER and ($this->player->gamemode & 0x01) === 0){
 			$inv = array();
-			/*for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
+			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
 				$this->player->setSlot($i, BlockAPI::getItem(AIR, 0, 0));
 				if($slot->getID() !== AIR and $slot->count > 0){
@@ -196,7 +192,7 @@ class Entity extends Position{
 					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
 				}
 			}
-			return $inv;*/
+			return $inv;
 		}elseif($this->class === ENTITY_OBJECT){
 			switch($this->type){
 				case OBJECT_PAINTING:
@@ -411,8 +407,9 @@ class Entity extends Position{
 	}
 
 	public function update(){
-		if($this->closed)return false;
-		//$this->server->api->chat->broadcast($this->class.":".$this->type);
+		if($this->closed === true){
+			return false;
+		}
 		$now = microtime(true);
 		if($this->check === false){
 			$this->lastUpdate = $now;
@@ -637,7 +634,9 @@ class Entity extends Position{
 	}
 	
 	public function updateMovement(){
-		if($this->closed) return false;
+		if($this->closed === true){
+			return false;
+		}
 		$now = microtime(true);
 		if($this->isStatic === false and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
 			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
@@ -649,19 +648,28 @@ class Entity extends Position{
 					}
 				}else{
 					$this->updateLast();
-					$players = $this->level->players;
+					$players = $this->server->api->player->getAll($this->level);
 					if($this->player instanceof Player){
 						unset($players[$this->player->CID]);
+						$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
+							"eid" => $this->eid,
+							"x" => $this->x,
+							"y" => $this->y,
+							"z" => $this->z,
+							"yaw" => $this->yaw,
+							"pitch" => $this->pitch,
+							"bodyYaw" => $this->yaw,
+						));
+					}else{
+						$this->server->api->player->broadcastPacket($players, MC_MOVE_ENTITY_POSROT, array(
+							"eid" => $this->eid,
+							"x" => $this->x,
+							"y" => $this->y,
+							"z" => $this->z,
+							"yaw" => $this->yaw,
+							"pitch" => $this->pitch,
+						));
 					}
-					$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
-						"eid" => $this->eid,
-						"x" => $this->x,
-						"y" => $this->y,
-						"z" => $this->z,
-						"yaw" => $this->yaw,
-						"pitch" => $this->pitch,
-						"bodyYaw" => $this->yaw,
-					));
 				}
 			}else{
 				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
@@ -991,14 +999,15 @@ class Entity extends Position{
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){
-		$this->setHealth($this->health -  $dmg, $cause, $force);
+		return $this->setHealth(max(-128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 	}
 
 	public function heal($health, $cause = "generic"){
-		$this->setHealth($this->health() + $health, $cause);
+		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
 	}
 
 	public function setHealth($health, $cause = "generic", $force = false){
+		$health = (int) $health;
 		$harm = false;
 		if($health < $this->health){
 			$harm = true;
@@ -1006,42 +1015,33 @@ class Entity extends Position{
 			if($this->class === ENTITY_PLAYER and ($this->player instanceof Player)){
 				$points = 0;
 				$values = array(
-					//초급
-					LEATHER_BOOTS => 4,
-					LEATHER_CAP => 6,
-					LEATHER_PANTS => 7,
-					LEATHER_TUNIC => 8,
-					
-					//중급
-					IRON_BOOTS => 9,
-					IRON_HELMET => 11,
-					IRON_LEGGINGS => 12,
-					IRON_CHESTPLATE => 13,
-				
-					//고급
-					DIAMOND_BOOTS => 12,
-					DIAMOND_HELMET => 14,
-					DIAMOND_LEGGINGS => 15,
-					DIAMOND_CHESTPLATE => 16,
-					
-					//상급
-					GOLD_BOOTS => 15,
-					GOLD_HELMET => 17,
-					GOLD_LEGGINGS => 18,
-					GOLD_CHESTPLATE => 19,
-					
-					//최상급
-					CHAIN_BOOTS => 19,
-					CHAIN_HELMET => 20,
-					CHAIN_LEGGINGS => 21,
-					CHAIN_CHESTPLATE => 22,
+					LEATHER_CAP => 1,
+					LEATHER_TUNIC => 3,
+					LEATHER_PANTS => 2,
+					LEATHER_BOOTS => 1,
+					CHAIN_HELMET => 1,
+					CHAIN_CHESTPLATE => 5,
+					CHAIN_LEGGINGS => 4,
+					CHAIN_BOOTS => 1,
+					GOLD_HELMET => 1,
+					GOLD_CHESTPLATE => 5,
+					GOLD_LEGGINGS => 3,
+					GOLD_BOOTS => 1,
+					IRON_HELMET => 2,
+					IRON_CHESTPLATE => 6,
+					IRON_LEGGINGS => 5,
+					IRON_BOOTS => 2,
+					DIAMOND_HELMET => 3,
+					DIAMOND_CHESTPLATE => 8,
+					DIAMOND_LEGGINGS => 6,
+					DIAMOND_BOOTS => 3,
 				);
 				foreach($this->player->armor as $part){
 					if($part instanceof Item and isset($values[$part->getID()])){
 						$points += $values[$part->getID()];
 					}
 				}
-				$dmg = $dmg*(94.5-$points)*0.009;
+				$dmg = (int) ($dmg - ($dmg * $points * 0.04));
 				$health = $this->health - $dmg;
 			}
 			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
@@ -1054,60 +1054,17 @@ class Entity extends Position{
 			return false;
 		}
 		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false or $force === true){
-			$this->health = $health;
+			$this->health = min(127, max(-127, $health));
 			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
 			if($harm === true){
-				if($this->class === ENTITY_PLAYER){
-					$play = $this->level->players;
-					unset($play[$this->player->CID]);
-					/*$this->server->api->player->broadcastPacket($play, MC_ENTITY_EVENT, array(
-						"eid" => $this,
-						"event" => 2,
-					));*/
-					$armor=$this->player->armor;
-					for($a=0;$a<4;$a++){
-						if(isset($armor[$a])){
-							$this->player->setArmor($a,new Item($armor[$a]->getID(),$armor[$a]->getMetadata()+1,$armor[$a]->count));
-							//가죽
-							if($armor[$a]->getID() == LEATHER_BOOTS and $armor[$a]->getMetadata()>=150
-							or $armor[$a]->getID() == LEATHER_CAP and $armor[$a]->getMetadata()>=200
-							or $armor[$a]->getID() == LEATHER_PANTS and $armor[$a]->getMetadata()>=250
-							or $armor[$a]->getID() == LEATHER_TUNIC and $armor[$a]->getMetadata()>=305
-							//철
-							or $armor[$a]->getID() == IRON_BOOTS and $armor[$a]->getMetadata()>=200
-							or $armor[$a]->getID() == IRON_HELMET and $armor[$a]->getMetadata()>=250
-							or $armor[$a]->getID() == IRON_LEGGINGS and $armor[$a]->getMetadata()>=300
-							or $armor[$a]->getID() == IRON_CHESTPLATE and $armor[$a]->getMetadata()>=360
-							//다이아
-							or $armor[$a]->getID() == DIAMOND_BOOTS and $armor[$a]->getMetadata()>=400
-							or $armor[$a]->getID() == DIAMOND_HELMET and $armor[$a]->getMetadata()>=450
-							or $armor[$a]->getID() == DIAMOND_LEGGINGS and $armor[$a]->getMetadata()>=500
-							or $armor[$a]->getID() == DIAMOND_CHESTPLATE and $armor[$a]->getMetadata()>=555
-							//금
-							or $armor[$a]->getID() == GOLD_BOOTS and $armor[$a]->getMetadata()>=500
-							or $armor[$a]->getID() == GOLD_HELMET and $armor[$a]->getMetadata()>=560
-							or $armor[$a]->getID() == GOLD_LEGGINGS and $armor[$a]->getMetadata()>=605
-							or $armor[$a]->getID() == GOLD_CHESTPLATE and $armor[$a]->getMetadata()>=650
-							//사슬
-							or $armor[$a]->getID() == CHAIN_BOOTS and $armor[$a]->getMetadata()>=700
-							or $armor[$a]->getID() == CHAIN_HELMET and $armor[$a]->getMetadata()>=750
-							or $armor[$a]->getID() == CHAIN_LEGGINGS and $armor[$a]->getMetadata()>=800
-							or $armor[$a]->getID() == CHAIN_CHESTPLATE and $armor[$a]->getMetadata()>=855){
-								if($armor[$a]->count <= 1)$this->player->setArmor($a,new Item(AIR,0,1));
-								else$this->player->setArmor($a,BlockAPI::getItem($armor[$a]->getID(),0,$armor[$a]->count-1));
-							}
-						}
-					}
-				}else{
-					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2));
-				}
+				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
 			}
 			if($this->player instanceof Player){
 				$this->player->dataPacket(MC_SET_HEALTH, array(
 					"health" => $this->health,
 				));
 			}
-			if((int)$this->health <= 0 and $this->dead === false){
+			if($this->health <= 0 and $this->dead === false){
 				$this->spawnDrops();
 				$this->air = 300;
 				$this->fire = 0;
@@ -1117,24 +1074,24 @@ class Entity extends Position{
 				$this->updateMetadata();
 				$this->dead = true;
 				if($this->player instanceof Player){
-					$play = $this->level->players;
-					$this->server->api->player->broadcastPacket($play, MC_MOVE_PLAYER, array(
+					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_MOVE_ENTITY_POSROT, array(
 						"eid" => $this->eid,
 						"x" => -256,
 						"y" => 128,
 						"z" => -256,
 						"yaw" => 0,
 						"pitch" => 0,
-						"BodyYaw" => 0,
 					));
+				}else{
+					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
+				}
+				if($this->player instanceof Player){
 					$this->player->blocked = true;
 					$this->server->api->dhandle("player.death", array("player" => $this->player, "cause" => $cause));
 					if($this->server->api->getProperty("hardcore") == 1){
 						$this->server->api->ban->ban($this->player->username);
 					}
 				}else{
-					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3));
-					$this->server->api->dhandle("entity.death", array("entity" => $this, "cause" => $cause));
 					$this->close();
 				}
 			}elseif($this->health > 0){
