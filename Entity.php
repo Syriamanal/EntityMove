@@ -999,15 +999,14 @@ class Entity extends Position{
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){
-		return $this->setHealth(max(-128, $this->getHealth() - ((int) $dmg)), $cause, $force);
+		return $this->setHealth(max(-128, $this->health - $dmg), $cause, $force);
 	}
 
 	public function heal($health, $cause = "generic"){
-		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
+		return $this->setHealth(min(20,$this->health + $health), $cause);
 	}
 
 	public function setHealth($health, $cause = "generic", $force = false){
-		$health = (int) $health;
 		$harm = false;
 		if($health < $this->health){
 			$harm = true;
@@ -1041,7 +1040,7 @@ class Entity extends Position{
 						$points += $values[$part->getID()];
 					}
 				}
-				$dmg = (int) ($dmg - ($dmg * $points * 0.04));
+				$dmg = $dmg - ($dmg * $points * 0.04);
 				$health = $this->health - $dmg;
 			}
 			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
