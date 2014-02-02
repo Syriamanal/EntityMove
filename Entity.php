@@ -257,7 +257,7 @@ class Entity extends Position{
 		$time = microtime(true);
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true){
 			foreach($this->server->api->entity->getAll() as $entity){
-				if($entity->class != ENTITY_ITEM or $entity->distance($this) < 1.5)continue;
+				if($entity->class != ENTITY_ITEM or $entity->distance($this) > 1.5)continue;
 				if($entity->closed === false and $entity->spawntime > 0 and ($time - $entity->spawntime) >= 0.6){
 					if((($this->player->gamemode & 0x01) === 1 or $this->player->hasSpace($entity->type, $entity->meta, $entity->stack) === true) and $this->server->api->dhandle("player.pickup", array(
 						"eid" => $this->player->eid,
