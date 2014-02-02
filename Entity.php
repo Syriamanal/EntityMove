@@ -258,18 +258,18 @@ class Entity extends Position{
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true){
 			foreach($this->server->api->entity->getAll() as $entity){
 				if($entity->class != ENTITY_ITEM or $entity->distance($this) < 1.5)continue;
-				if($item->closed === false and $item->spawntime > 0 and ($time - $item->spawntime) >= 0.6){
-					if((($this->player->gamemode & 0x01) === 1 or $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) and $this->server->api->dhandle("player.pickup", array(
+				if($entity->closed === false and $entity->spawntime > 0 and ($time - $entity->spawntime) >= 0.6){
+					if((($this->player->gamemode & 0x01) === 1 or $this->player->hasSpace($entity->type, $entity->meta, $entity->stack) === true) and $this->server->api->dhandle("player.pickup", array(
 						"eid" => $this->player->eid,
 						"player" => $this->player,
-						"entity" => $item,
-						"block" => $item->type,
-						"meta" => $item->meta,
-						"target" => $item->eid
+						"entity" => $entity,
+						"block" => $entity->type,
+						"meta" => $entity->meta,
+						"target" => $entity->eid
 					)) !== false){
-						$item->close();
-						//$item->spawntime = 0;
-						//$this->server->schedule(15, array($item, "close"));
+						$entity->close();
+						//$entity->spawntime = 0;
+						//$this->server->schedule(15, array($entity, "close"));
 					}
 				}
 			}
