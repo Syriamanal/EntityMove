@@ -105,9 +105,9 @@ class Entity extends Position{
 					$this->stack = (int) $this->data["stack"];
 				}
 				$this->setHealth(1, "generic");
-				$this->server->schedule(5, array($this, "update"), array(), true);
-				$this->server->schedule(2, array($this, "updateMovement"), array(), true);
-				$this->size = 0.75;
+				$this->server->schedule(10, array($this, "update"), array(), true);
+				$this->server->schedule(1, array($this, "updateMovement"), array(), true);
+				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
 				$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"]:10, "generic");
@@ -480,16 +480,16 @@ class Entity extends Position{
 					$zm = $this->level->getBlock(new Vector3($this->x,$this->y,$this->z-0.5));
 					$zm1 = $this->level->getBlock(new Vector3($this->x,$this->y+1,$this->z-0.5));
 					if(($xp->getID() == 0 or !$xp->isFullBlock) and ($xp1->getID() == 0 or !$xp1->isFullBlock) and cos(atan2($z,$x)) > 0){
-						if(($this->y-(int)$this->y == 0.5 and ($xp->getID() == WOOD_SLAB or $xp->getID() == SLAB)) or ($xp->getID() != SLAB and $xp->getID() != CAKE and $xp->getID() != FENCE and $xp->getID() != GLASS_PANE and $xp->getID() != IRON_BARS and $xp->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 4;
+						if(($this->y-(int)$this->y == 0.5 and ($xp->getID() == WOOD_SLAB or $xp->getID() == SLAB)) or ($xp->getID() != SLAB and $xp->getID() != CAKE and $xp->getID() != FENCE and $xp->getID() != GLASS_PANE and $xp->getID() != IRON_BARS and $xp->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 5.3;
 					}
 					if(($xm->getID() == 0 or !$xm->isFullBlock) and ($xm1->getID() == 0 or !$xm1->isFullBlock) and cos(atan2($z,$x)) < 0){
-						if(($this->y-(int)$this->y == 0.5 and ($xm->getID() == WOOD_SLAB or $xm->getID() == SLAB)) or ($xm->getID() != SLAB and $xm->getID() != CAKE and $xm->getID() != FENCE and $xm->getID() != GLASS_PANE and $xm->getID() != IRON_BARS and $xm->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 4;
+						if(($this->y-(int)$this->y == 0.5 and ($xm->getID() == WOOD_SLAB or $xm->getID() == SLAB)) or ($xm->getID() != SLAB and $xm->getID() != CAKE and $xm->getID() != FENCE and $xm->getID() != GLASS_PANE and $xm->getID() != IRON_BARS and $xm->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 5.3;
 					}
 					if(($zp->getID() == 0 or !$zp->isFullBlock) and ($zp1->getID() == 0 or !$zp1->isFullBlock) and sin(atan2($z,$x)) > 0){
-						if(($this->y-(int)$this->y == 0.5 and ($zp->getID() == WOOD_SLAB or $zp->getID() == SLAB)) or ($zp->getID() != SLAB and $zp->getID() != CAKE and $zp->getID() != FENCE and $zp->getID() != GLASS_PANE and $zp->getID() != IRON_BARS and $zp->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 4;
+						if(($this->y-(int)$this->y == 0.5 and ($zp->getID() == WOOD_SLAB or $zp->getID() == SLAB)) or ($zp->getID() != SLAB and $zp->getID() != CAKE and $zp->getID() != FENCE and $zp->getID() != GLASS_PANE and $zp->getID() != IRON_BARS and $zp->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 5.3;
 					}
 					if(($zm->getID() == 0 or !$zm->isFullBlock) and ($zm1->getID() == 0 or !$zm1->isFullBlock) and sin(atan2($z,$x)) < 0){
-						if(($this->y-(int)$this->y == 0.5 and ($zm->getID() == WOOD_SLAB or $zm->getID() == SLAB)) or ($zm->getID() != SLAB and $zm->getID() != CAKE and $zm->getID() != FENCE and $zm->getID() != GLASS_PANE and $zm->getID() != IRON_BARS and $zm->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 4;
+						if(($this->y-(int)$this->y == 0.5 and ($zm->getID() == WOOD_SLAB or $zm->getID() == SLAB)) or ($zm->getID() != SLAB and $zm->getID() != CAKE and $zm->getID() != FENCE and $zm->getID() != GLASS_PANE and $zm->getID() != IRON_BARS and $zm->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 5.3;
 					}
 					if($target instanceof Entity){
 						if($this->type == MOB_CREEPER){
