@@ -104,9 +104,9 @@ class Entity extends Position{
 					$this->meta = (int) $this->data["meta"];
 					$this->stack = (int) $this->data["stack"];
 				}
-				$this->setHealth(5, "generic");
-				$this->server->schedule(6010, array($this, "update")); //Despawn
-				$this->update();
+				$this->setHealth(1, "generic");
+				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->server->schedule(2, array($this, "updateMovement"), array(), true);
 				$this->size = 0.75;
 				break;
 			case ENTITY_MOB:
@@ -639,40 +639,27 @@ class Entity extends Position{
 		}
 		$now = microtime(true);
 		if($this->isStatic === false and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
-			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
-				if($this->server->api->handle("entity.move", $this) === false){
-					if($this->class === ENTITY_PLAYER){
-						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
-					}else{
-						$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
-					}
+			if($this->server->api->handle("entity.move", $this) === false){
+				if($this->class === ENTITY_PLAYER){
+					$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 				}else{
-					$this->updateLast();
-					$players = $this->server->api->player->getAll($this->level);
-					if($this->player instanceof Player){
-						unset($players[$this->player->CID]);
-						$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
-							"eid" => $this->eid,
-							"x" => $this->x,
-							"y" => $this->y,
-							"z" => $this->z,
-							"yaw" => $this->yaw,
-							"pitch" => $this->pitch,
-							"bodyYaw" => $this->yaw,
-						));
-					}else{
-						$this->server->api->player->broadcastPacket($players, MC_MOVE_ENTITY_POSROT, array(
-							"eid" => $this->eid,
-							"x" => $this->x,
-							"y" => $this->y,
-							"z" => $this->z,
-							"yaw" => $this->yaw,
-							"pitch" => $this->pitch,
-						));
-					}
+					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
 				}
 			}else{
-				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
+				$this->updateLast();
+				$players = $this->server->api->player->getAll($this->level);
+				if($this->player instanceof Player){
+					unset($players[$this->player->CID]);
+				}
+				$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
+					"eid" => $this->eid,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"yaw" => $this->yaw,
+					"pitch" => $this->pitch,
+					"bodyYaw" => $this->yaw,
+				));
 			}
 		}
 		$this->lastUpdate = $now;
