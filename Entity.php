@@ -303,7 +303,7 @@ class Entity extends Position{
 				case MOB_SHEEP:
 				case MOB_COW:
 				case MOB_PIG:
-					if($this->server->api->getProperty("spawn-animals") !== true){
+					if($this->server->api->getProperty("spawn-animals") !== true or $this->server->difficulty == 0){
 						$this->close();
 						return false;
 					}
@@ -313,7 +313,7 @@ class Entity extends Position{
 				case MOB_PIGMAN:
 				case MOB_SKELETON:
 				case MOB_SPIDER:
-					if($this->server->api->getProperty("spawn-mobs") !== true){
+					if($this->server->api->getProperty("spawn-mobs") !== true or $this->server->difficulty == 0){
 						$this->close();
 						return false;
 					}
