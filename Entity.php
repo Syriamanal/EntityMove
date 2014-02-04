@@ -57,6 +57,7 @@ class Entity extends Position{
 
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->bomb = 5
+		$this->target = false;
 		$this->level = $level;
 		$this->fallY = false;
 		$this->fallStart = false;
