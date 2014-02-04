@@ -121,7 +121,6 @@ class Entity extends Position{
 					MOB_SKELETON => 20,
 					MOB_PIGMAN => 22,
 				);
-				$this->setHealth($health[$this->type], "generic");
 				$mobs = array(
 					MOB_COW => "소",
 					MOB_PIG => "돼지",
@@ -133,10 +132,11 @@ class Entity extends Position{
 					MOB_SKELETON => "스켈레톤",
 					MOB_PIGMAN => "좀비피그맨",
 				);
+				$this->size = 1;
+				$this->setName($mobs[$this->type]);
+				$this->setHealth($health[$this->type], "generic");
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				$this->server->schedule(2, array($this, "updateMovement"), array(), true);
-				$this->setName($mobs[$this->type]);
-				$this->size = 1;
 				break;
 			case ENTITY_FALLING:
 				$this->setHealth(PHP_INT_MAX, "generic");
