@@ -313,7 +313,7 @@ class Entity extends Position{
 				case MOB_PIGMAN:
 				case MOB_SKELETON:
 				case MOB_SPIDER:
-					if($this->server->api->getProperty("spawn-mobs") !== true or $this->server->difficulty == 0){
+					if($this->server->api->getProperty("spawn-mobs") !== true){
 						$this->close();
 						return false;
 					}
