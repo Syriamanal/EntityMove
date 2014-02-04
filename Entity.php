@@ -649,18 +649,28 @@ class Entity extends Position{
 			}else{
 				$this->updateLast();
 				$players = $this->server->api->player->getAll($this->level);
-				if($this->player instanceof Player){
-					unset($players[$this->player->CID]);
+				if($this->player instanceof Player or $this->class == ENTITY_MOB){
+					if($this->player instanceof Player)unset($players[$this->player->CID]);
+					$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
+						"eid" => $this->eid,
+						"x" => $this->x,
+						"y" => $this->y,
+						"z" => $this->z,
+						"yaw" => $this->yaw,
+						"pitch" => $this->pitch,
+						"bodyYaw" => $this->yaw,
+					));
+				}else{
+					$this->server->api->player->broadcastPacket($players, MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $this->eid,
+						"x" => $this->x,
+						"y" => $this->y,
+						"z" => $this->z,
+						"yaw" => $this->yaw,
+						"pitch" => $this->pitch,
+					));
 				}
-				$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
-					"eid" => $this->eid,
-					"x" => $this->x,
-					"y" => $this->y,
-					"z" => $this->z,
-					"yaw" => $this->yaw,
-					"pitch" => $this->pitch,
-					"bodyYaw" => $this->yaw,
-				));
+				
 			}
 		}
 		$this->lastUpdate = $now;
