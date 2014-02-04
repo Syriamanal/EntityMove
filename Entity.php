@@ -105,8 +105,7 @@ class Entity extends Position{
 					$this->stack = (int) $this->data["stack"];
 				}
 				$this->setHealth(1);
-				$this->update();
-				$this->server->schedule(5, array($this, "updateMovement"), array(), true);
+				$this->server->schedule(5, array($this, "update"), array(), true);
 				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
