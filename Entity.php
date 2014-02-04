@@ -56,6 +56,7 @@ class Entity extends Position{
 	public $inAction = false;
 
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
+		$this->bomb = 5
 		$this->level = $level;
 		$this->fallY = false;
 		$this->fallStart = false;
@@ -109,17 +110,28 @@ class Entity extends Position{
 				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
-				$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"]:10, "generic");
+				$health = array(
+					MOB_COW => 10,
+					MOB_PIG => 10,
+					MOB_SHEEP => 8,
+					MOB_CHICKEN => 4,
+					MOB_ZOMBIE => 20,
+					MOB_SPIDER => 16,
+					MOB_CREEPER => 20,
+					MOB_SKELETON => 20,
+					MOB_PIGMAN => 22,
+				);
+				$this->setHealth($health[$this->type], "generic");
 				$mobs = array(
-					MOB_ZOMBIE => "좀비",
-					MOB_SPIDER => "거미",
-					MOB_PIGMAN => "좀비피그맨",
-					MOB_CREEPER => "크리퍼",
-					MOB_SKELETON => "스켈레톤",
-					MOB_CHICKEN => "닭",
 					MOB_COW => "소",
 					MOB_PIG => "돼지",
 					MOB_SHEEP => "양",
+					MOB_CHICKEN => "닭",
+					MOB_ZOMBIE => "좀비",
+					MOB_SPIDER => "거미",
+					MOB_CREEPER => "크리퍼",
+					MOB_SKELETON => "스켈레톤",
+					MOB_PIGMAN => "좀비피그맨",
 				);
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				$this->server->schedule(2, array($this, "updateMovement"), array(), true);
@@ -486,7 +498,7 @@ class Entity extends Position{
 							}
 						}elseif($xp->isFullBlock){
 							if($xp1->getID() == 0 or (!$xp1->isFullBlock and $xp1->getID() != SLAB and $xp1->getID() != WOODEN_SLAB and $xp1->getID() != CAKE and $xp1->getID() != FENCE and $xp1->getID() != GLASS_PANE and $xp1->getID() != IRON_BARS and $xp1->getID() != STONE_WALL)){
-								$this->speedY = 2.1;
+								$this->speedY = 2;
 							}
 						}
 					}
@@ -498,7 +510,7 @@ class Entity extends Position{
 							}
 						}elseif($xm->isFullBlock){
 							if($xm1->getID() == 0 or (!$xm1->isFullBlock and $xm1->getID() != SLAB and $xm1->getID() != WOODEN_SLAB and $xm1->getID() != CAKE and $xm1->getID() != FENCE and $xm1->getID() != GLASS_PANE and $xm1->getID() != IRON_BARS and $xm1->getID() != STONE_WALL)){
-								$this->speedY = 2.1;
+								$this->speedY = 2;
 							}
 						}
 					}
@@ -510,7 +522,7 @@ class Entity extends Position{
 							}
 						}elseif($zp->isFullBlock){
 							if($zp1->getID() == 0 or (!$zp1->isFullBlock and $zp1->getID() != SLAB and $zp1->getID() != WOODEN_SLAB and $zp1->getID() != CAKE and $zp1->getID() != FENCE and $zp1->getID() != GLASS_PANE and $zp1->getID() != IRON_BARS and $zp1->getID() != STONE_WALL)){
-								$this->speedY = 2.1;
+								$this->speedY = 2;
 							}
 						}
 					}
@@ -522,35 +534,57 @@ class Entity extends Position{
 							}
 						}elseif($zm->isFullBlock){
 							if($zm1->getID() == 0 or (!$zm1->isFullBlock and $zm1->getID() != SLAB and $zm1->getID() != WOODEN_SLAB and $zm1->getID() != CAKE and $zm1->getID() != FENCE and $zm1->getID() != GLASS_PANE and $zm1->getID() != IRON_BARS and $zm1->getID() != STONE_WALL)){
-								$this->speedY = 2.1;
+								$this->speedY = 2;
 							}
 						}
 					}
 					if($target instanceof Entity){
 						if($this->type == MOB_CREEPER){
-							if($this->distance($target) <= 3.2){
+							if($this->distance($target) < 3){
 								$this->bomb--;
 								if($this->bomb <= 0){
-									$this->bomb = 13;
-									$e = new Explosion($target, 5, $this->eid);
+									$e = new Explosion($this, 3.2);
 									$e->explode();
+									$this->close();
 								}
 							}else{
-								if($this->bomb < 13)$this->bomb++;
+								if($this->bomb < 5)$this->bomb++;
 							}
-						}else if($this->type == MOB_SKELETON){
-							if($this->distance($target) <= 3.2){
-								if(mt_rand(1,10) == 1){
-									$target->harm(2,$this->eid);
-									$this->speedX = $this->speedX * 0.05;
-									$this->speedZ = $this->speedZ * 0.05;
+						}elseif($this->type == MOB_SKELETON){
+							if($this->distance($target) < 4){
+								if(mt_rand(1,8) == 1){
+									$target->harm(4,$this->eid);
+									$this->speedX = $this->speedX * 0.02;
+									$this->speedZ = $this->speedZ * 0.02;
 								}
 							}
-						}else{
+						}elseif($this->type == MOB_SPIDER){
 							if($this->distance($target) <= 1){
-								$target->harm(3,$this->eid);
-								$this->speedX = $this->speedX * 0.4;
-								$this->speedZ = $this->speedZ * 0.4;
+								if($this->server->difficulty <= 2){
+									$target->harm(2,$this->eid);
+								}elseif($this->server->difficulty == 3){
+									$target->harm(3,$this->eid);
+								}
+							}
+						}elseif($this->type == MOB_ZOMBIE){
+							if($this->distance($target) <= 1){
+								if($this->server->difficulty == 1){
+									$target->harm(3,$this->eid);
+								}elseif($this->server->difficulty == 2){
+									$target->harm(4,$this->eid);
+								}elseif($this->server->difficulty == 3){
+									$target->harm(6,$this->eid);
+								}
+							}
+						}elseif($this->type == MOB_PIGMAN){
+							if($this->distance($target) <= 1){
+								if($this->server->difficulty == 1){
+									$target->harm(5,$this->eid);
+								}elseif($this->server->difficulty == 2){
+									$target->harm(9,$this->eid);
+								}elseif($this->server->difficulty == 3){
+									$target->harm(13,$this->eid);
+								}
 							}
 						}
 					}
