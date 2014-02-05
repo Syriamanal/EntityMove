@@ -484,11 +484,11 @@ class Entity extends Position{
 					$this->pitch = rad2deg(-atan2($y, $xz))+22;
 					$this->yaw = ((atan2($z, $x) * 180) / M_PI) - 90;
 					$dis = array(
-						MOB_ZOMBIE => 0.5,
-						MOB_PIGMAN => 0.5,
-						MOB_CHICKEN => 0.5,
-						MOB_CREEPER => 0.5,
-						MOB_SKELETON => 0.5,
+						MOB_ZOMBIE => 0.25,
+						MOB_PIGMAN => 0.25,
+						MOB_CHICKEN => 0.25,
+						MOB_CREEPER => 0.25,
+						MOB_SKELETON => 0.25,
 						
 						MOB_COW => 0.85,
 						MOB_PIG => 0.85,
@@ -511,7 +511,7 @@ class Entity extends Position{
 							}
 						}elseif($xp->getID() != 0 and $xp->isFullBlock){
 							if($xp1->getID() == 0 or (!$xp1->isFullBlock and $xp1->getID() != SLAB and $xp1->getID() != WOODEN_SLAB and $xp1->getID() != CAKE and $xp1->getID() != FENCE and $xp1->getID() != GLASS_PANE and $xp1->getID() != IRON_BARS and $xp1->getID() != STONE_WALL)){
-								$this->speedY = 4.2;
+								$this->speedY = 5.4;
 							}
 						}
 					}
@@ -523,7 +523,7 @@ class Entity extends Position{
 							}
 						}elseif($xm->getID() != 0 and $xm->isFullBlock){
 							if($xm1->getID() == 0 or (!$xm1->isFullBlock and $xm1->getID() != SLAB and $xm1->getID() != WOODEN_SLAB and $xm1->getID() != CAKE and $xm1->getID() != FENCE and $xm1->getID() != GLASS_PANE and $xm1->getID() != IRON_BARS and $xm1->getID() != STONE_WALL)){
-								$this->speedY = 4.2;
+								$this->speedY = 5.4;
 							}
 						}
 					}
@@ -535,7 +535,7 @@ class Entity extends Position{
 							}
 						}elseif($zp->getID() != 0 and $zp->isFullBlock){
 							if($zp1->getID() == 0 or (!$zp1->isFullBlock and $zp1->getID() != SLAB and $zp1->getID() != WOODEN_SLAB and $zp1->getID() != CAKE and $zp1->getID() != FENCE and $zp1->getID() != GLASS_PANE and $zp1->getID() != IRON_BARS and $zp1->getID() != STONE_WALL)){
-								$this->speedY = 4.2;
+								$this->speedY = 5.4;
 							}
 						}
 					}
@@ -547,7 +547,7 @@ class Entity extends Position{
 							}
 						}elseif($zm->getID() != 0 and $zm->isFullBlock){
 							if($zm1->getID() == 0 or (!$zm1->isFullBlock and $zm1->getID() != SLAB and $zm1->getID() != WOODEN_SLAB and $zm1->getID() != CAKE and $zm1->getID() != FENCE and $zm1->getID() != GLASS_PANE and $zm1->getID() != IRON_BARS and $zm1->getID() != STONE_WALL)){
-								$this->speedY = 4.2;
+								$this->speedY = 5.4;
 							}
 						}
 					}
