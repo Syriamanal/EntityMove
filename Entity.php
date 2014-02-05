@@ -553,18 +553,18 @@ class Entity extends Position{
 					}
 					if($target instanceof Entity){
 						if($this->type == MOB_CREEPER){
-							if($this->distance($target) < 3){
+							if($this->distance($target) < 3.2){
 								$this->bomb--;
 								if($this->bomb <= 0){
-									$e = new Explosion($this, 3.2);
+									$this->bomb = 5;
+									$e = new Explosion($target, 5, $this->eid);
 									$e->explode();
-									$this->close();
 								}
 							}else{
 								if($this->bomb < 5)$this->bomb++;
 							}
 						}elseif($this->type == MOB_SKELETON){
-							if($this->distance($target) < 4){
+							if($this->distance($target) < mt_rand(35,55)/10){
 								if(mt_rand(1,8) == 1){
 									$target->harm(4,$this->eid);
 									$this->speedX = $this->speedX * 0.02;
@@ -572,7 +572,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_SPIDER){
-							if($this->distance($target) <= 1){
+							if($this->distance($target) < 1.1){
 								if($this->server->difficulty <= 2){
 									$target->harm(2,$this->eid);
 								}elseif($this->server->difficulty == 3){
@@ -580,7 +580,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_ZOMBIE){
-							if($this->distance($target) <= 1){
+							if($this->distance($target) < 1.1){
 								if($this->server->difficulty == 1){
 									$target->harm(3,$this->eid);
 								}elseif($this->server->difficulty == 2){
@@ -590,7 +590,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_PIGMAN){
-							if($this->distance($target) <= 1){
+							if($this->distance($target) < 1.1){
 								if($this->server->difficulty == 1){
 									$target->harm(5,$this->eid);
 								}elseif($this->server->difficulty == 2){
