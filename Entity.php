@@ -625,16 +625,9 @@ class Entity extends Position{
 					}
 					foreach($this->level->players as $otherp){
 						if(!$otherp->connected or !$otherp->spawned or $otherp->entity->dead or $otherp->gamemode == 1) continue;
-						if($this->type == MOB_PIGMAN){
-							if($this->hurt == true){
-								foreach($this->server->api->entity->getAll() as $en){
-									if($this->distance($en) <= 8 and $en->type == MOB_PIGMAN){
-										$en->hurt = true;
-									}
-								}
-								if($this->distance($otherp->entity) <= 7){
-									$en->target = $otherp;
-								}
+						if($this->type == MOB_PIGMAN and $this->hurt == true){
+							if($this->distance($otherp->entity) <= 7){
+								$en->target = $otherp;
 							}
 						}else{
 							$mob = array(
