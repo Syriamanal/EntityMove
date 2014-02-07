@@ -503,7 +503,7 @@ class Entity extends Position{
 					$y = $target->y - $this->y;
 					$xz = sqrt(pow($x, 2) + pow($z, 2));
 					if($this->type == MOB_PIGMAN){
-						if($this->hurt == true){
+						if($this->target != false){
 							$speed = 3.95;
 						}else{
 							$speed = 3.32;
@@ -624,7 +624,7 @@ class Entity extends Position{
 						}
 					}
 					foreach($this->level->players as $otherp){
-						if(!$otherp->connected or !$otherp->spawned or $otherp->entity->dead) continue;
+						if(!$otherp->connected or !$otherp->spawned or $otherp->entity->dead or $otherp->gamemode == 1) continue;
 						if($this->type == MOB_PIGMAN){
 							if($this->hurt == true){
 								foreach($this->server->api->entity->getAll() as $en){
