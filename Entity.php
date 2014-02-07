@@ -58,6 +58,7 @@ class Entity extends Position{
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->bomb = 5
 		$this->target = false;
+		$this->hurt = false;
 		$this->level = $level;
 		$this->fallY = false;
 		$this->fallStart = false;
@@ -475,26 +476,43 @@ class Entity extends Position{
 					if($this->target instanceof Player and $this->target->connected and !$this->target->entity->dead){
 						$target = $this->target->entity;
 					}else{
-						$target = new Vector3(mt_rand(0,256), $this->y, mt_rand(0,256));
+						if(!$this->time or $this->time >= mt_rand(20,80)){
+							$this->time = 0;
+							$ax = $this->x-(mt_rand(-10000,10000)/100);
+							$az = $this->z-(mt_rand(-10000,10000)/100);
+							$target = new Vector3($ax,$this->y,$az);
+						}else{
+							$this->time++;
+						}
 					}
+					$dis = array(
+						MOB_COW => 0.91,
+						MOB_PIG => 0.91,
+						MOB_SHEEP => 0.91,
+						MOB_SPIDER => 0.91,
+						
+						MOB_CHICKEN => 0.45,
+						
+						MOB_ZOMBIE => 0.35,
+						MOB_PIGMAN => 0.35,
+						MOB_CREEPER => 0.35,
+						MOB_SKELETON => 0.35,
+					);
 					$x = $target->x - $this->x;
 					$z = $target->z - $this->z;
 					$y = $target->y - $this->y;
 					$xz = sqrt(pow($x, 2) + pow($z, 2));
-					$this->pitch = rad2deg(-atan2($y, $xz))+22;
+					if($this->type == MOB_PIGMAN){
+						if($this->hurt == true){
+							$speed = 3.95;
+						}else{
+							$speed = 3.32;
+						}
+					}else{
+						$speed = 3.32;
+					}
 					$this->yaw = ((atan2($z, $x) * 180) / M_PI) - 90;
-					$dis = array(
-						MOB_ZOMBIE => 0.25,
-						MOB_PIGMAN => 0.25,
-						MOB_CHICKEN => 0.25,
-						MOB_CREEPER => 0.25,
-						MOB_SKELETON => 0.25,
-						
-						MOB_COW => 0.85,
-						MOB_PIG => 0.85,
-						MOB_SHEEP => 0.85,
-						MOB_SPIDER => 0.85,
-					);
+					$this->pitch = min(25,rad2deg(-atan2($y, $xz))+22,75);
 					$xp = $this->level->getBlock(new Vector3($this->x+$dis[$this->type],$this->y,$this->z));
 					$xm = $this->level->getBlock(new Vector3($this->x-$dis[$this->type],$this->y,$this->z));
 					$zp = $this->level->getBlock(new Vector3($this->x,$this->y,$this->z+$dis[$this->type]));
@@ -506,24 +524,24 @@ class Entity extends Position{
 					//X++
 					if(cos(atan2($z,$x)) > 0){
 						if($xp->getID() == 0 or !$xp->isFullBlock){
-							if($xp->getID() == 0 or (!$xp1->isFullBlock and $xp1->getID() != SLAB and $xp1->getID() != WOODEN_SLAB and $xp1->getID() != CAKE and $xp1->getID() != FENCE and $xp1->getID() != GLASS_PANE and $xp1->getID() != IRON_BARS and $xp1->getID() != STONE_WALL)){
-								if(($this->y-(int)$this->y == 0.5 and ($xp->getID() == WOOD_SLAB or $xp->getID() == SLAB))or($xp->getID() != SLAB and $xp->getID() != WOODEN_SLAB and $xp->getID() != CAKE and $xp->getID() != FENCE and $xp->getID() != GLASS_PANE and $xp->getID() != IRON_BARS and $xp->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 4;
+							if($xp1->getID() == 0 or (!$xp1->isFullBlock and $xp1->getID() != SLAB and $xp1->getID() != WOODEN_SLAB and $xp1->getID() != CAKE and $xp1->getID() != FENCE and $xp1->getID() != GLASS_PANE and $xp1->getID() != IRON_BARS and $xp1->getID() != STONE_WALL)){
+								if(($this->y-(int)$this->y == 0.5 and ($xp->getID() == WOOD_SLAB or $xp->getID() == SLAB))or($xp->getID() != SLAB and $xp->getID() != WOODEN_SLAB and $xp->getID() != CAKE and $xp->getID() != FENCE and $xp->getID() != GLASS_PANE and $xp->getID() != IRON_BARS and $xp->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * $speed;
 							}
 						}elseif($xp->getID() != 0 and $xp->isFullBlock){
 							if($xp1->getID() == 0 or (!$xp1->isFullBlock and $xp1->getID() != SLAB and $xp1->getID() != WOODEN_SLAB and $xp1->getID() != CAKE and $xp1->getID() != FENCE and $xp1->getID() != GLASS_PANE and $xp1->getID() != IRON_BARS and $xp1->getID() != STONE_WALL)){
-								$this->speedY = 5.8;
+								$this->speedY = 5.65;
 							}
 						}
 					}
 					//X--
 					if(cos(atan2($z,$x)) < 0){
 						if($xm->getID() == 0 or !$xm->isFullBlock){
-							if($xm->getID() == 0 or (!$xm1->isFullBlock and $xm1->getID() != SLAB and $xm1->getID() != WOODEN_SLAB and $xm1->getID() != CAKE and $xm1->getID() != FENCE and $xm1->getID() != GLASS_PANE and $xm1->getID() != IRON_BARS and $xm1->getID() != STONE_WALL)){
-								if(($this->y-(int)$this->y == 0.5 and ($xm->getID() == WOOD_SLAB or $xm->getID() == SLAB))or($xm->getID() != SLAB and $xm->getID() != WOODEN_SLAB and $xm->getID() != CAKE and $xm->getID() != FENCE and $xm->getID() != GLASS_PANE and $xm->getID() != IRON_BARS and $xm->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * 4;
+							if($xm1->getID() == 0 or (!$xm1->isFullBlock and $xm1->getID() != SLAB and $xm1->getID() != WOODEN_SLAB and $xm1->getID() != CAKE and $xm1->getID() != FENCE and $xm1->getID() != GLASS_PANE and $xm1->getID() != IRON_BARS and $xm1->getID() != STONE_WALL)){
+								if(($this->y-(int)$this->y == 0.5 and ($xm->getID() == WOOD_SLAB or $xm->getID() == SLAB))or($xm->getID() != SLAB and $xm->getID() != WOODEN_SLAB and $xm->getID() != CAKE and $xm->getID() != FENCE and $xm->getID() != GLASS_PANE and $xm->getID() != IRON_BARS and $xm->getID() != STONE_WALL))$this->speedX = cos(atan2($z,$x)) * $speed;
 							}
 						}elseif($xm->getID() != 0 and $xm->isFullBlock){
 							if($xm1->getID() == 0 or (!$xm1->isFullBlock and $xm1->getID() != SLAB and $xm1->getID() != WOODEN_SLAB and $xm1->getID() != CAKE and $xm1->getID() != FENCE and $xm1->getID() != GLASS_PANE and $xm1->getID() != IRON_BARS and $xm1->getID() != STONE_WALL)){
-								$this->speedY = 5.8;
+								$this->speedY = 5.65;
 							}
 						}
 					}
@@ -531,11 +549,11 @@ class Entity extends Position{
 					if(sin(atan2($z,$x)) > 0){
 						if($zp->getID() == 0 or !$zp->isFullBlock){
 							if($zp1->getID() == 0 or (!$zp1->isFullBlock and $zp1->getID() != SLAB and $zp1->getID() != WOODEN_SLAB and $zp1->getID() != CAKE and $zp1->getID() != FENCE and $zp1->getID() != GLASS_PANE and $zp1->getID() != IRON_BARS and $zp1->getID() != STONE_WALL)){
-								if(($this->y-(int)$this->y == 0.5 and ($zp->getID() == WOOD_SLAB or $zp->getID() == SLAB))or($zp->getID() != SLAB and $zp->getID() != WOODEN_SLAB and $zp->getID() != CAKE and $zp->getID() != FENCE and $zp->getID() != GLASS_PANE and $zp->getID() != IRON_BARS and $zp->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 4;
+								if(($this->y-(int)$this->y == 0.5 and ($zp->getID() == WOOD_SLAB or $zp->getID() == SLAB))or($zp->getID() != SLAB and $zp->getID() != WOODEN_SLAB and $zp->getID() != CAKE and $zp->getID() != FENCE and $zp->getID() != GLASS_PANE and $zp->getID() != IRON_BARS and $zp->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * $speed;
 							}
 						}elseif($zp->getID() != 0 and $zp->isFullBlock){
 							if($zp1->getID() == 0 or (!$zp1->isFullBlock and $zp1->getID() != SLAB and $zp1->getID() != WOODEN_SLAB and $zp1->getID() != CAKE and $zp1->getID() != FENCE and $zp1->getID() != GLASS_PANE and $zp1->getID() != IRON_BARS and $zp1->getID() != STONE_WALL)){
-								$this->speedY = 5.8;
+								$this->speedY = 5.65;
 							}
 						}
 					}
@@ -543,11 +561,11 @@ class Entity extends Position{
 					if(sin(atan2($z,$x)) < 0){
 						if($zm->getID() == 0 or !$zm->isFullBlock){
 							if($zm1->getID() == 0 or (!$zm1->isFullBlock and $zm1->getID() != SLAB and $zm1->getID() != WOODEN_SLAB and $zm1->getID() != CAKE and $zm1->getID() != FENCE and $zm1->getID() != GLASS_PANE and $zm1->getID() != IRON_BARS and $zm1->getID() != STONE_WALL)){
-								if(($this->y-(int)$this->y == 0.5 and ($zm->getID() == WOOD_SLAB or $zm->getID() == SLAB))or($zm->getID() != SLAB and $zm->getID() != WOODEN_SLAB and $zm->getID() != CAKE and $zm->getID() != FENCE and $zm->getID() != GLASS_PANE and $zm->getID() != IRON_BARS and $zm->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * 4;
+								if(($this->y-(int)$this->y == 0.5 and ($zm->getID() == WOOD_SLAB or $zm->getID() == SLAB))or($zm->getID() != SLAB and $zm->getID() != WOODEN_SLAB and $zm->getID() != CAKE and $zm->getID() != FENCE and $zm->getID() != GLASS_PANE and $zm->getID() != IRON_BARS and $zm->getID() != STONE_WALL))$this->speedZ = sin(atan2($z,$x)) * $speed;
 							}
 						}elseif($zm->getID() != 0 and $zm->isFullBlock){
 							if($zm1->getID() == 0 or (!$zm1->isFullBlock and $zm1->getID() != SLAB and $zm1->getID() != WOODEN_SLAB and $zm1->getID() != CAKE and $zm1->getID() != FENCE and $zm1->getID() != GLASS_PANE and $zm1->getID() != IRON_BARS and $zm1->getID() != STONE_WALL)){
-								$this->speedY = 5.8;
+								$this->speedY = 5.65;
 							}
 						}
 					}
@@ -556,15 +574,15 @@ class Entity extends Position{
 							if($this->distance($target) < 3.2){
 								$this->bomb--;
 								if($this->bomb <= 0){
-									$this->bomb = 5;
+									$this->bomb = 6;
 									$e = new Explosion($target, 5, $this->eid);
 									$e->explode();
 								}
 							}else{
-								if($this->bomb < 5)$this->bomb++;
+								if($this->bomb < 6)$this->bomb++;
 							}
 						}elseif($this->type == MOB_SKELETON){
-							if($this->distance($target) < mt_rand(35,55)/10){
+							if($this->distance($target) < mt_rand(38,62)/10){
 								if(mt_rand(1,8) == 1){
 									$target->harm(4,$this->eid);
 									$this->speedX = $this->speedX * 0.02;
@@ -572,7 +590,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_SPIDER){
-							if($this->distance($target) < 1.1){
+							if($this->distance($target) < 1.35){
 								if($this->server->difficulty <= 2){
 									$target->harm(2,$this->eid);
 								}elseif($this->server->difficulty == 3){
@@ -580,7 +598,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_ZOMBIE){
-							if($this->distance($target) < 1.1){
+							if($this->distance($target) < 1.35){
 								if($this->server->difficulty == 1){
 									$target->harm(3,$this->eid);
 								}elseif($this->server->difficulty == 2){
@@ -590,7 +608,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_PIGMAN){
-							if($this->distance($target) < 1.1){
+							if($this->distance($target) < 1.35){
 								if($this->server->difficulty == 1){
 									$target->harm(5,$this->eid);
 								}elseif($this->server->difficulty == 2){
@@ -600,11 +618,36 @@ class Entity extends Position{
 								}
 							}
 						}
+					}else{
+						if($this->distance($target) <= mt_rand(0,25)/10){
+							$this->time = 80;
+						}
 					}
-					foreach($this->level->players as $otherp) {
-						if(!$otherp->connected or !$otherp->spawned) continue;
-						if($this->distance($otherp->entity) <= 7){
-							$this->target = $otherp;
+					foreach($this->level->players as $otherp){
+						if(!$otherp->connected or !$otherp->spawned or $otherp->entity->dead) continue;
+						if($this->type == MOB_PIGMAN){
+							if($this->hurt == true){
+								foreach($this->server->api->entity->getAll() as $en){
+									if($this->distance($en) <= 8 and $en->type == MOB_PIGMAN){
+										$en->hurt = true;
+									}
+								}
+								if($this->distance($otherp->entity) <= 7){
+									$en->target = $otherp;
+								}
+							}
+						}else{
+							$mob = array(
+								MOB_CREEPER,
+								MOB_ZOMBIE,
+								MOB_SKELETON,
+								MOB_SPIDER,
+							);
+							if(in_array($this->type,$mob)){
+								if($this->distance($otherp->entity) <= 7){
+									$en->target = $otherp;
+								}
+							}
 						}
 					}
 				}
@@ -1136,7 +1179,48 @@ class Entity extends Position{
 			$this->health = min(127, max(-127, $health));
 			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
 			if($harm === true){
-				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
+				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound$this->hurt = true;
+				foreach($this->server->api->entity->getAll() as $en){
+					if($this->distance($en) <= 8 and $en->type == MOB_PIGMAN){
+						$en->hurt = true;
+					}
+				}
+				if($this->class === ENTITY_PLAYER){
+					$armor=$this->player->armor;
+					for($a=0;$a<4;$a++){
+						if(isset($armor[$a])){
+							$this->player->setArmor($a,new Item($armor[$a]->getID(),$armor[$a]->getMetadata()+1,$armor[$a]->count));
+							//가죽
+							if($armor[$a]->getID() == LEATHER_BOOTS and $armor[$a]->getMetadata()>=150
+							or $armor[$a]->getID() == LEATHER_CAP and $armor[$a]->getMetadata()>=200
+							or $armor[$a]->getID() == LEATHER_PANTS and $armor[$a]->getMetadata()>=250
+							or $armor[$a]->getID() == LEATHER_TUNIC and $armor[$a]->getMetadata()>=305
+							//철
+							or $armor[$a]->getID() == IRON_BOOTS and $armor[$a]->getMetadata()>=200
+							or $armor[$a]->getID() == IRON_HELMET and $armor[$a]->getMetadata()>=250
+							or $armor[$a]->getID() == IRON_LEGGINGS and $armor[$a]->getMetadata()>=300
+							or $armor[$a]->getID() == IRON_CHESTPLATE and $armor[$a]->getMetadata()>=360
+							//다이아
+							or $armor[$a]->getID() == DIAMOND_BOOTS and $armor[$a]->getMetadata()>=400
+							or $armor[$a]->getID() == DIAMOND_HELMET and $armor[$a]->getMetadata()>=450
+							or $armor[$a]->getID() == DIAMOND_LEGGINGS and $armor[$a]->getMetadata()>=500
+							or $armor[$a]->getID() == DIAMOND_CHESTPLATE and $armor[$a]->getMetadata()>=555
+							//금
+							or $armor[$a]->getID() == GOLD_BOOTS and $armor[$a]->getMetadata()>=500
+							or $armor[$a]->getID() == GOLD_HELMET and $armor[$a]->getMetadata()>=560
+							or $armor[$a]->getID() == GOLD_LEGGINGS and $armor[$a]->getMetadata()>=605
+							or $armor[$a]->getID() == GOLD_CHESTPLATE and $armor[$a]->getMetadata()>=650
+							//사슬
+							or $armor[$a]->getID() == CHAIN_BOOTS and $armor[$a]->getMetadata()>=700
+							or $armor[$a]->getID() == CHAIN_HELMET and $armor[$a]->getMetadata()>=750
+							or $armor[$a]->getID() == CHAIN_LEGGINGS and $armor[$a]->getMetadata()>=800
+							or $armor[$a]->getID() == CHAIN_CHESTPLATE and $armor[$a]->getMetadata()>=855){
+								if($armor[$a]->count <= 1)$this->player->setArmor($a,new Item(AIR,0,1));
+								else$this->player->setArmor($a,BlockAPI::getItem($armor[$a]->getID(),0,$armor[$a]->count-1));
+							}
+						}
+					}
+				}
 			}
 			if($this->player instanceof Player){
 				$this->player->dataPacket(MC_SET_HEALTH, array(
