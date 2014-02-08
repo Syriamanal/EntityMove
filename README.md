@@ -1,4 +1,6 @@
 [[한국어]](#korean)
+
+[[English]](#english)
 <a name+"english"><a/>
 #English
 
@@ -26,9 +28,11 @@ Mob Move Activate drop items and Very many bugs
 
 
 <a name="korean"></a>
-# 한국어
 [[English]](#english)
 
+[[한국어]](#korean)
+
+#한국어
 PMMP의 불안정한 엔티티 프로그래밍을
 수정하는 프로젝트입니다
 
