@@ -28,12 +28,34 @@ class MilkRPG implements Plugin{
 	public function han($data, $event){
 		switch($event){
 			case "Monster.Spawn":
-				foreach($this->api->player->getAll() as $play){
-					if(!$play->spawned)continue;
-					//준비중
-				}
+				foreach($this->api->level->getAll as $level){
+					if($this->api->time->getPhase($level) == "night"){//밤일시에 몬스터 스폰
+						if($this->spawn <= 25 and mt_rand(0,5) == mt_rand(0,5)){
+							$mobrand = mt_rand(32,36);
+							$data = array(
+								"x" => mt_rand(0,25580)/100,
+								"y" => mt_rand(64,100),//이부분은 현재 베타
+								"z" => mt_rand(0,25580)/100,
+							);
+							$this->spawn++;
+							$e = $this->api->entity->add($this->api->level->getDefault(), ENTITY_MOB, $mobrand, $data);
+							$this->api->entity->spawnToAll($e);
+						}
+					}
+					if($this->spawn <= 25 and mt_rand(0,5) == mt_rand(0,5)){
+						$mobrand = mt_rand(10,13);
+						$data = array(
+							"x" => mt_rand(0,25580)/100,
+							"y" => mt_rand(64,100),//이부분은 현재 베타
+							"z" => mt_rand(0,25580)/100,
+						);
+						$this->spawn++;
+						$e = $this->api->entity->add($this->api->level->getDefault(), ENTITY_MOB, $mobrand, $data);
+						$this->api->entity->spawnToAll($e);
+					}
 				break;
 			case "entity.death":
+				$this->spawn--;
 				break;
 		}
 	}
