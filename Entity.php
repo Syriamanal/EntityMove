@@ -23,6 +23,7 @@
 몬스터 난이도별 데미지
 갑옷 내구도 추가(아직 불안정)
 난이도가 평화로움이면 몬스터 자동제거
+
 */
 class Entity extends Position{
 	public $age;
@@ -1251,6 +1252,7 @@ class Entity extends Position{
 					$this->server->api->dhandle("player.death", array("player" => $this->player, "cause" => $cause));
 					if($this->server->api->getProperty("hardcore") == 1){
 						$this->server->api->ban->ban($this->player->username);
+						$this->api->chat->broadcast("[HARDCORE]".$this->player->username." 님이 사망하여 차단되었습니다.");
 					}
 				}else{
 					$this->close();
