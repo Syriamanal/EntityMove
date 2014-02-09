@@ -63,6 +63,7 @@ class Entity extends Position{
 
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->bomb = 6;
+		$this->time = false;
 		$this->target = false;
 		$this->hurt = false;
 		$this->level = $level;
