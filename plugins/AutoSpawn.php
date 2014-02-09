@@ -22,7 +22,7 @@ class MilkRPG implements Plugin{
 	public function __destruct(){}
 	public function init(){
 		$this->api->addHandler("entity.death", array($this, "han"));
-		$this->api->schedule(10, array($this, "han"), array(), true, "Monster.spawn");
+		$this->api->schedule(40, array($this, "han"), array(), true, "Monster.spawn");
 	}
 	
 	public function han($data, $event){
@@ -30,7 +30,7 @@ class MilkRPG implements Plugin{
 			case "Monster.Spawn":
 				foreach($this->api->level->getAll as $level){
 					if($this->api->time->getPhase($level) == "night"){//밤일시에 몬스터 스폰
-						if($this->spawn <= 25 and mt_rand(0,5) == mt_rand(0,5)){
+						if($this->spawn < 27 and mt_rand(0,6) == mt_rand(0,6)){
 							$mobrand = mt_rand(32,36);
 							$data = array(
 								"x" => mt_rand(0,25580)/100,
@@ -42,7 +42,7 @@ class MilkRPG implements Plugin{
 							$this->api->entity->spawnToAll($e);
 						}
 					}
-					if($this->spawn <= 25 and mt_rand(0,5) == mt_rand(0,5)){
+					if($this->spawn < 27 and mt_rand(0,6) == mt_rand(0,6)){
 						$mobrand = mt_rand(10,13);
 						$data = array(
 							"x" => mt_rand(0,25580)/100,
