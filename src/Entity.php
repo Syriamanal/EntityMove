@@ -515,7 +515,12 @@ class Entity extends Position{
 					$y = $target->y - $this->y;
 					$xz = sqrt(pow($x, 2) + pow($z, 2));
 					$this->yaw = ((atan2($z, $x) * 180) / M_PI) - 90;
-					$this->pitch = min(25,rad2deg(-atan2($y, $xz))+22,75);
+					$this->pitch = rad2deg(-atan2($y, $xz));
+					if($this->pitch < 20){
+						$this->pitch = 20;
+					}elseif($this->pitch > 80){
+						$this->pitch = 80;
+					}
 					$xp = $this->level->getBlock(new Vector3($this->x+$dis[$this->type],$this->y,$this->z));
 					$xm = $this->level->getBlock(new Vector3($this->x-$dis[$this->type],$this->y,$this->z));
 					$zp = $this->level->getBlock(new Vector3($this->x,$this->y,$this->z+$dis[$this->type]));
