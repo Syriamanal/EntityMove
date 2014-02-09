@@ -611,10 +611,6 @@ class Entity extends Position{
 							}
 						}elseif($this->type == MOB_PIGMAN){
 							if($this->distance($target) <= 1.2){
-								$this->server->api->player->broadcastPacket($this->level->players, MC_ENTITY_EVENT, array(
-									"eid" => $this->eid,
-									"event" => 4,
-								));
 								if($this->server->difficulty == 1){
 									$target->harm(5,$this->eid);
 								}elseif($this->server->difficulty == 2){
