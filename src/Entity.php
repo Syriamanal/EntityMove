@@ -1251,11 +1251,11 @@ class Entity extends Position{
 						"yaw" => 0,
 						"pitch" => 0,
 					));
-					$this->player->blocked = true;
 					if($this->server->api->getProperty("hardcore") == 1){
 						$this->server->api->ban->ban($this->player->username);
 						$this->server->api->chat->broadcast($this->player." 님이 사망하여 퇴장당했습니다");
 					}else{
+						$this->player->blocked = true;
 						$this->server->api->dhandle("player.death", array("player" => $this->player, "cause" => $cause));
 					}
 				}else{
