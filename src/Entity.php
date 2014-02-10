@@ -595,10 +595,65 @@ class Entity extends Position{
 									$target->harm(4,$this->eid);
 									$this->speedX = $this->speedX * 0.02;
 									$this->speedZ = $this->speedZ * 0.02;
+									/*$time = microtime(true) - $this->startAction;
+									$d = array(
+										"x" => $this->entity->x,
+										"y" => $this->entity->y + 1.6,
+										"z" => $this->entity->z,
+									);
+									$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+									$e->yaw = $this->entity->yaw;
+									$e->pitch = $this->entity->pitch;
+									$rotation = ($this->entity->yaw - 90) % 360;
+									if($rotation < 0){
+										$rotation = (360 + $rotation);
+									}
+									$rotation = ($rotation + 180);
+									if($rotation >= 360){
+										$rotation = ($rotation - 360);
+									}
+									$X = 1;
+									$Z = 1;
+									$overturn = false;
+									if(0 <= $rotation and $rotation < 90){
+										
+									}
+									elseif(90 <= $rotation and $rotation < 180){
+										$rotation -= 90;
+										$X = (-1);
+										$overturn = true;
+									}
+									elseif(180 <= $rotation and $rotation < 270){
+										$rotation -= 180;
+										$X = (-1);
+										$Z = (-1);
+									}
+									elseif(270 <= $rotation and $rotation < 360){
+										$rotation -= 270;
+										$Z = (-1);
+										$overturn = true;
+									}
+									$rad = deg2rad($rotation);
+									$pitch = (-($this->entity->pitch));
+									$speed = 70;
+									$speedY = (sin(deg2rad($pitch)) * $speed);
+									$speedXZ = (cos(deg2rad($pitch)) * $speed);
+									if($overturn){
+										$speedX = (sin($rad) * $speedXZ * $X);
+										$speedZ = (cos($rad) * $speedXZ * $Z);
+									}
+									else{
+										$speedX = (cos($rad) * $speedXZ * $X);
+										$speedZ = (sin($rad) * $speedXZ * $Z);
+									}
+									$e->speedX = $speedX;
+									$e->speedZ = $speedZ;
+									$e->speedY = $speedY;
+									$this->server->api->entity->spawnToAll($e);*/
 								}
 							}
 						}elseif($this->type == MOB_SPIDER){
-							if($this->distance($target) <= 1.2){
+							if($this->distance($target) <= 1){
 								if($this->server->difficulty <= 2){
 									$target->harm(2,$this->eid);
 								}elseif($this->server->difficulty == 3){
@@ -606,7 +661,7 @@ class Entity extends Position{
 								}
 							}
 						}elseif($this->type == MOB_ZOMBIE){
-							if($this->distance($target) <= 1.2){
+							if($this->distance($target) <= 1){
 								if($this->server->difficulty == 1){
 									$target->harm(3,$this->eid);
 								}elseif($this->server->difficulty == 2){
@@ -1196,26 +1251,26 @@ class Entity extends Position{
 							or $armor[$a]->getID() == LEATHER_CAP and $armor[$a]->getMetadata()>=200
 							or $armor[$a]->getID() == LEATHER_PANTS and $armor[$a]->getMetadata()>=250
 							or $armor[$a]->getID() == LEATHER_TUNIC and $armor[$a]->getMetadata()>=305
+							//사슬
+							or $armor[$a]->getID() == CHAIN_BOOTS and $armor[$a]->getMetadata()>=700
+							or $armor[$a]->getID() == CHAIN_HELMET and $armor[$a]->getMetadata()>=750
+							or $armor[$a]->getID() == CHAIN_LEGGINGS and $armor[$a]->getMetadata()>=800
+							or $armor[$a]->getID() == CHAIN_CHESTPLATE and $armor[$a]->getMetadata()>=855
+							//금
+							or $armor[$a]->getID() == GOLD_BOOTS and $armor[$a]->getMetadata()>=500
+							or $armor[$a]->getID() == GOLD_HELMET and $armor[$a]->getMetadata()>=560
+							or $armor[$a]->getID() == GOLD_LEGGINGS and $armor[$a]->getMetadata()>=605
+							or $armor[$a]->getID() == GOLD_CHESTPLATE and $armor[$a]->getMetadata()>=650
 							//철
 							or $armor[$a]->getID() == IRON_BOOTS and $armor[$a]->getMetadata()>=200
 							or $armor[$a]->getID() == IRON_HELMET and $armor[$a]->getMetadata()>=250
 							or $armor[$a]->getID() == IRON_LEGGINGS and $armor[$a]->getMetadata()>=300
 							or $armor[$a]->getID() == IRON_CHESTPLATE and $armor[$a]->getMetadata()>=360
 							//다이아
-							or $armor[$a]->getID() == DIAMOND_BOOTS and $armor[$a]->getMetadata()>=400
-							or $armor[$a]->getID() == DIAMOND_HELMET and $armor[$a]->getMetadata()>=450
-							or $armor[$a]->getID() == DIAMOND_LEGGINGS and $armor[$a]->getMetadata()>=500
-							or $armor[$a]->getID() == DIAMOND_CHESTPLATE and $armor[$a]->getMetadata()>=555
-							//금
-							or $armor[$a]->getID() == GOLD_BOOTS and $armor[$a]->getMetadata()>=500
-							or $armor[$a]->getID() == GOLD_HELMET and $armor[$a]->getMetadata()>=560
-							or $armor[$a]->getID() == GOLD_LEGGINGS and $armor[$a]->getMetadata()>=605
-							or $armor[$a]->getID() == GOLD_CHESTPLATE and $armor[$a]->getMetadata()>=650
-							//사슬
-							or $armor[$a]->getID() == CHAIN_BOOTS and $armor[$a]->getMetadata()>=700
-							or $armor[$a]->getID() == CHAIN_HELMET and $armor[$a]->getMetadata()>=750
-							or $armor[$a]->getID() == CHAIN_LEGGINGS and $armor[$a]->getMetadata()>=800
-							or $armor[$a]->getID() == CHAIN_CHESTPLATE and $armor[$a]->getMetadata()>=855){
+							or $armor[$a]->getID() == DIAMOND_BOOTS and $armor[$a]->getMetadata()>=364
+							or $armor[$a]->getID() == DIAMOND_HELMET and $armor[$a]->getMetadata()>=529
+							or $armor[$a]->getID() == DIAMOND_LEGGINGS and $armor[$a]->getMetadata()>=496
+							or $armor[$a]->getID() == DIAMOND_CHESTPLATE and $armor[$a]->getMetadata()>=430){
 								if($armor[$a]->count <= 1)$this->player->setArmor($a,new Item(AIR,0,1));
 								else$this->player->setArmor($a,BlockAPI::getItem($armor[$a]->getID(),0,$armor[$a]->count-1));
 							}
