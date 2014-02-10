@@ -23,10 +23,10 @@ class MilkRPG implements Plugin{
 	public function init(){
 		$this->api->addHandler("entity.death", array($this, "han"));
 		$this->conf = new Config($this->api->plugin->configPath($this)."config.yml",CONFIG_YAML, array(
-			"스폰시간" => 15,//20이 1초
-			"몬스터최대수" => 25,
+			"Spawn time" => 15,//20이 1초
+			"Maximum number of monsters" => 25,
 		));
-		$this->api->schedule($this->conf->get("스폰시간"), array($this, "han"), array(), true, "Monster.spawn");
+		$this->api->schedule($this->conf->get("Maximum number of monsters spawning time"), array($this, "han"), array(), true, "Monster.spawn");
 	}
 	
 	public function han($data, $event){
@@ -34,7 +34,7 @@ class MilkRPG implements Plugin{
 			case "Monster.Spawn":
 				foreach($this->api->level->getAll() as $level){
 					if($this->api->time->getPhase($level) == "night"){//밤일시에 몬스터 스폰
-						if($this->spawn < $this->conf->get("몬스터최대수")){
+						if($this->spawn < $this->conf->get("Maximum number of monsters")){
 							$mobrand = mt_rand(32,36);
 							$data = array(
 								"x" => mt_rand(0,25580)/100,
@@ -51,7 +51,7 @@ class MilkRPG implements Plugin{
 							}
 						}
 					}
-					if($this->spawn < $this->conf->get("몬스터최대수")){
+					if($this->spawn < $this->conf->get("Maximum number of monsters")){
 						$mobrand = mt_rand(10,13);
 						$data = array(
 							"x" => mt_rand(0,25580)/100,
