@@ -505,9 +505,10 @@ class Entity extends Position{
 					);
 					if($this->target instanceof Player){
 						$target = $this->target->entity;
-						if($this->type == MOB_PIGMAN) $speed = 3.85;
+						if($this->type == MOB_PIGMAN) $speed = 4;
+						else $speed = 3.4;
 					}else{
-						$speed = 3.25;
+						$speed = 3.4;
 						$target = $this->target;
 					}
 					$x = $target->x - $this->x;
