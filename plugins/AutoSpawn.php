@@ -38,7 +38,7 @@ class MilkRPG implements Plugin{
 							$mobrand = mt_rand(32,36);
 							$data = array(
 								"x" => mt_rand(0,25580)/100,
-								"y" => mt_rand(0,12700)/100,
+								"y" => mt_rand(50,127),
 								"z" => mt_rand(0,25580)/100,
 							);
 							$block = $level->getBlock(new Vector3($data["x"],$data["y"],$data["z"]));
@@ -55,7 +55,7 @@ class MilkRPG implements Plugin{
 						$mobrand = mt_rand(10,13);
 						$data = array(
 							"x" => mt_rand(0,25580)/100,
-							"y" => mt_rand(0,12700)/100,
+							"y" => mt_rand(50,127),
 							"z" => mt_rand(0,25580)/100,
 						);
 						$block = $level->getBlock(new Vector3($data["x"],$data["y"],$data["z"]));
