@@ -32,7 +32,7 @@ class MilkRPG implements Plugin{
 	public function han($data, $event){
 		switch($event){
 			case "Monster.Spawn":
-				foreach($this->api->level->getAll as $level){
+				foreach($this->api->level->getAll() as $level){
 					if($this->api->time->getPhase($level) == "night"){//밤일시에 몬스터 스폰
 						if($this->spawn < $this->conf->get("몬스터최대수")){
 							$mobrand = mt_rand(32,36);
