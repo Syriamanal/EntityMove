@@ -481,7 +481,7 @@ class Entity extends Position{
 				$update = false;
 				if($this->class == ENTITY_MOB){
 					if(!($this->target instanceof Player) or !$this->target->connected or $this->target->entity->dead){
-						if(!$this->time or !($this->target instanceof Vector3) or $this->time >= mt_rand(10,50)){
+						if(!($this->target instanceof Vector3) or $this->time >= mt_rand(10,50)){
 							$this->time = 0;
 							$ax = $this->x-(mt_rand(-10000,10000)/100);
 							$az = $this->z-(mt_rand(-10000,10000)/100);
