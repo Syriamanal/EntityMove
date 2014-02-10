@@ -15,8 +15,8 @@ class MilkRPG implements Plugin{
 	private $api;
 	private $server;
 	public function __construct(ServerAPI $api, $server = false){
-		$this->api = $api;
 		$this->spawn = 0;
+		$this->api = $api;
 		$this->server = ServerAPI::request();
 	}
 	public function __destruct(){}
@@ -67,6 +67,7 @@ class MilkRPG implements Plugin{
 							$this->api->entity->spawnToAll($e);
 						}
 					}
+				}
 				break;
 			case "entity.death":
 				$this->spawn--;
